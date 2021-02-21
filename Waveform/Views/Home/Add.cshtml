@@ -31,11 +31,12 @@
             <input asp-for="DateAdded" type="hidden" class="form-control" />
             
             <label for="file" id="filelabel">Choose a song</label>
-            <input asp-for="Audio" type="file" id="file" accept=".mp3, .aac, .ogg" multiple />
-            <span class="text-danger" style="display: none;" id="warning">Please provide an audio file to add.</span>
+            <input asp-for="Audio" type="file" id="file" accept=".mp3, .aac, .ogg, .flac" />
+            <span class="text-danger" style="display: none;" id="add">Please select a .mp3, .aac, .ogg or .flac file.</span>
+            <span class="text-danger" style="display: none;" id="size">Only files under 30MB are accepted.</span>
 
             <div class="form-group">
-                <br /><input type="submit" value="Confirm" id="add" class="btn btn-success" />
+                <br /><input type="submit" value="Confirm" class="btn btn-success" />
             </div>
 
         </form>
@@ -46,26 +47,30 @@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script>
-        let ok = false;
-        let formats = ['.mp3', '.aac', '.ogg'];
+        let ok = 0;
+        let formats = ['.mp3', '.aac', '.ogg', '.flac'];
 
         $('#file').change(function (e) {
-            ok = false;
-            formats.forEach(format => {
-                ($('#file').val().substring($('#file').val().lastIndexOf('.')) == format) && (ok = true);
+            ok = 0;
+            formats.some(format => {
+                if ($('#file').val().substring($('#file').val().lastIndexOf('.')) === format)
+                    ok = e.target.files[0].size < 30000000 ? 2 : 1; return;
             });
-            $('#name').val(ok == true ? e.target.files[0].name : '');
-            $('#warning').css('display', (ok == false) ? 'block' : 'none');
-            $('#filelabel').html(ok == true ? e.target.files[0].name : 'Choose a song');
+
+            $('#name').val(ok === 2 ? e.target.files[0].name : '');
+            $('#filelabel').html(ok !== 0 ? e.target.files[0].name : 'Choose a song');
+
+            $('#add').css('display', ok === 0 ? 'block' : 'none');
+            $('#size').css('display', ok === 1 ? 'block' : 'none');
         });
 
         $('form').submit(function (e) {
-            if ($('#file').val().length == 0 || ok == false) {
+            if ($('#file').val().length === 0 || ok === 0 || ok === 1) {
                 e.preventDefault();
-                $('#warning').css('display', 'block');
-            } else {
-                $('#userId').val('@UserManager.GetUserId(User)');
+                ok === 0 && $('#add').css('display', 'block');
+                ok === 1 && $('#size').css('display', 'block');
             }
+            $('#userId').val('@UserManager.GetUserId(User)');
         });
     </script>
 }

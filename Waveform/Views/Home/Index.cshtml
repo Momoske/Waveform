@@ -59,6 +59,9 @@
                     </span>
                 </span>
                 <span class="songs__track__added">
+                    <a asp-action="Delete" asp-route-id="@song.Id" class="remove">
+                        <span class="material-icons-round" style="font-size: 16px;">remove_circle_outline</span>
+                    </a>
                     <span>@song.DateAdded.Replace("/", ".").Replace(" ", " - ").Remove(song.DateAdded.Length - 1)</span>
                 </span>
             </div>

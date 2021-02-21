@@ -31,7 +31,8 @@
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <input asp-for="Image" type="file" accept=".png, .jpg, .jpeg" id="image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
+                <span class="text-danger" style="display: none;" id="size">Only images under 30MB are accepted.</span>
+                <span class="text-danger" style="display: none;" id="type">Please select a .png, .jpg or .jpeg image.</span>
             </div>
 
             <input asp-for="Playlist.Image" type="hidden" />
@@ -103,14 +104,29 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-    <script>
-        
+<script>
+        let ok = 0;
+        let formats = ['.png', '.jpg', '.jpeg'];
         const image = $('#playlist__image').attr('src');
+
         $('#image').change(function (e) {
+            ok = 0;
+            formats.some(format => {
+                if ($('#image').val() !== '') {
+                    if ($('#image').val().substring($('#image').val().lastIndexOf('.')) === format)
+                        ok = e.target.files[0].size < 30000000 ? 2 : 1;
+                } else ok = 2;
+            });
+
+            $('#size').css('display', ok === 1 ? 'block' : 'none');
+            $('#type').css('display', ok === 0 ? 'block' : 'none');
+
             $('#playlist__image').attr('src',
                 e.target.files[0] !== undefined ? URL.createObjectURL(e.target.files[0]) : image
             );
         });
+
+        $('form').submit(function (e) { ok !== 2 && e.preventDefault(); });
 
         function addSong(id, name, date) {
             $('#songs').val(function () { return this.value !== '' ? this.value + ',' + id : id });
@@ -152,5 +168,5 @@
             $('#songs').val(songs.join(','));
             $(`#playlist > div.songs__track:eq(${position - 1})`).remove();
         }
-    </script>
+</script>
 }
