@@ -1,0 +1,109 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Waveform.Areas.Identity.Data
+
+@model IEnumerable<Waveform.Models.Song>
+@{
+    ViewData["Title"] = "Home";
+}
+
+@inject SignInManager<WaveformUser> SignInManager
+@inject UserManager<WaveformUser> UserManager
+
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="index__header">
+        <h1>Songs</h1>
+        <a href="/Playlist">
+            <span class="material-icons">library_music</span>
+            &nbsp;&nbsp;PLAYLISTS
+        </a>
+    </div>
+
+   @if (!Model.Any())
+    {
+        <br />
+        <div class="addSongs" style="flex-direction: column; align-items: center;">
+            <h1>Your Waveform library is empty.</h1><br />
+            <h2>To do so, press "Add Songs" below.</h2>
+        </div>
+    }
+
+    <div class="addSongs">
+        <a asp-action="Add">
+            <span class="material-icons">library_add</span>
+            &nbsp;&nbsp;ADD SONGS&nbsp;
+        </a>
+    </div>
+    <br />
+    <div id="playlist" class="songs">
+        <div class="songs__header">
+            <span>#</span>
+            <span>Title</span>
+            <span>Date added</span>
+        </div>
+        <hr />
+       @{int i = 1;}
+       @foreach (var song in Model)
+        {
+            <div class="songs__track" aria-label="@song.Id" ondblclick="loadPlay(@i)">
+                <span class="songs__track__count">
+                    <span>@i</span>
+                    <span class="songs__track__play material-icons-round" onclick="loadPlay(@i)" style="display: none; margin: -1px 0 -3px -8px;">
+                        play_arrow
+                    </span>
+                </span>
+                <span class="songs__track__title">
+                    <span>
+                        <span>@song.Name</span>
+                    </span>
+                </span>
+                <span class="songs__track__added">
+                    <span>@song.DateAdded.Replace("/", ".").Replace(" ", " - ").Remove(song.DateAdded.Length - 1)</span>
+                </span>
+            </div>
+            i++;
+        }
+    </div>
+}
+else
+{
+    <div>
+        <h1>
+            Please <a href="/Identity/Account/Login">sign-in</a> or <a href="/Identity/Account/Register">register</a> before using Waveform.
+        </h1>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/js/waveform.js"></script>
+    <script>
+        var wavesurfer = null;
+
+        function loadSongs(songs, position, baseUrl) {
+            if (wavesurfer !== null) {
+                wavesurfer.destroy();
+                wavesurfer = null;
+            }
+
+            if (wavesurfer == null) {
+                wavesurfer = createWave(songs, position, baseUrl);
+            }
+        }
+
+        function loadPlay(position) {
+            var playlist = $(`#playlist > div.songs__track`);
+            loadSongs(playlist, position - 1, '@Url.Action("GetSong", "Playlist")?id=');
+        }
+
+        $('.songs__track').mouseenter(function () {
+            $(this).find('.songs__track__count > span:not(.songs__track__play)').css('display', 'none');
+            $(this).find('.songs__track__count > span.songs__track__play').css('display', 'block');
+
+            $(this).mouseleave(function () {
+                $(this).find('.songs__track__count > span:not(.songs__track__play)').css('display', 'block');
+                $(this).find('.songs__track__count > span.songs__track__play').css('display', 'none');
+            });
+        });
+    </script>
+}

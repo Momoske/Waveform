@@ -1,0 +1,48 @@
+﻿@model Waveform.Models.Playlist
+@{
+    ViewData["Title"] = "Deleting " + Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="index__header">
+    <h1>Deleting: @Model.Title</h1>
+    <a asp-action="Index">
+        <span class="material-icons">library_music</span>
+        &nbsp;&nbsp;My playlists
+    </a>
+</div>
+
+@{ string image = String.Format("data:image/*;base64,{0}", Convert.ToBase64String(Model.Image)); }
+
+<div class="delete__playlist mt-3">
+    <img id="playlist__image" src="@image" alt="artwork" />
+    <div class="playlist__info">
+        <h6>Playlist</h6>
+        <h2>Please confirm you want to delete this playlist.</h2>
+
+        <div class="form-group">
+            <label class="control-label">Playlist Name</label>
+            <input class="col-md-6 form-control" id="check" autocomplete="off"/>
+        </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Delete" id="delete" class="btn btn-danger" disabled />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#check').keyup(function () {
+            ($(this).val() == "@Model.Title")
+                ?
+            $('#delete').removeAttr('disabled')
+                :
+            $('#delete').attr('disabled', 'true');
+        });
+        $('form').submit(function (e) {
+            $('#check').val() != "@Model.Title" && e.preventDefault();
+        });
+    </script>
+}

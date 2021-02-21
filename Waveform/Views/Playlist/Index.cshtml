@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Waveform.Models.Playlist>
+@{
+    ViewData["Title"] = "Playlists";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="index__header">
+    <h1>Playlists</h1>
+    <a asp-action="Create">
+        <span class="material-icons">library_add</span>
+        &nbsp;&nbsp;Create playlist
+    </a>
+</div>
+
+<div class="playlists mt-3">
+    @foreach (var playlist in Model)
+    {
+        string image = String.Format("data:image/*;base64,{0}", Convert.ToBase64String(playlist.Image));
+
+        <div class="homecard">
+            <a asp-action="Details" asp-route-id="@playlist.Id">
+                <div class="homecard__image">
+                    <div class="background__img" style="background-image: url(@Html.DisplayFor(model => image))"></div>
+                </div>
+                <h5>
+                    @Html.DisplayFor(model => playlist.Title)
+                </h5>
+            </a>
+            <span>
+                <a asp-action="Edit" asp-route-id="@playlist.Id">
+                    <span class="material-icons">edit</span>&nbsp;
+                    Edit
+                </a>
+
+                <a asp-action="Delete" asp-route-id="@playlist.Id">
+                    Delete&nbsp;
+                    <span class="material-icons">delete</span>
+                </a>
+            </span>
+        </div>
+    }
+</div>

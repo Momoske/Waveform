@@ -1,0 +1,24 @@
+﻿@model Waveform.Models.Song
+@{
+    ViewData["Title"] = "Deleting " + Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="index__header">
+    <h1>Deleting: @Model.Name</h1>
+    <a asp-action="Index">
+        <span class="material-icons">library_music</span>
+        &nbsp;&nbsp;My songs
+    </a>
+</div>
+
+<div class="delete__song mt-3">
+    <div class="song__info">
+        <br /><br /><br /><br /><br /><br />
+        <h2>Please confirm you want to delete this song.</h2><br />
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Delete" id="delete" class="btn btn-danger" />
+        </form>
+    </div>
+</div>

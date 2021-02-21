@@ -1,0 +1,71 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Waveform.Areas.Identity.Data
+
+@model Waveform.Models.Song
+@{
+    ViewData["Title"] = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@inject SignInManager<WaveformUser> SignInManager
+@inject UserManager<WaveformUser> UserManager
+
+
+<div class="index__header">
+    <h1>Add songs</h1>
+    <a asp-action="Index">
+        <span class="material-icons">library_music</span>
+        &nbsp;&nbsp;My songs
+    </a>
+</div>
+
+<div class="add__song mt-3">
+    <div class="song__info">
+        <h2>Select the song to add from your computer.</h2><br />
+        <form asp-action="Add" method="post" enctype="multipart/form-data">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input asp-for="UserId" id="userId" type="hidden" class="form-control" />
+            <input asp-for="Name" type="hidden" id="name" class="form-control" />
+            <input asp-for="DateAdded" type="hidden" class="form-control" />
+            
+            <label for="file" id="filelabel">Choose a song</label>
+            <input asp-for="Audio" type="file" id="file" accept=".mp3, .aac, .ogg" multiple />
+            <span class="text-danger" style="display: none;" id="warning">Please provide an audio file to add.</span>
+
+            <div class="form-group">
+                <br /><input type="submit" value="Confirm" id="add" class="btn btn-success" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        let ok = false;
+        let formats = ['.mp3', '.aac', '.ogg'];
+
+        $('#file').change(function (e) {
+            ok = false;
+            formats.forEach(format => {
+                ($('#file').val().substring($('#file').val().lastIndexOf('.')) == format) && (ok = true);
+            });
+            $('#name').val(ok == true ? e.target.files[0].name : '');
+            $('#warning').css('display', (ok == false) ? 'block' : 'none');
+            $('#filelabel').html(ok == true ? e.target.files[0].name : 'Choose a song');
+        });
+
+        $('form').submit(function (e) {
+            if ($('#file').val().length == 0 || ok == false) {
+                e.preventDefault();
+                $('#warning').css('display', 'block');
+            } else {
+                $('#userId').val('@UserManager.GetUserId(User)');
+            }
+        });
+    </script>
+}

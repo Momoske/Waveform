@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Waveform.Areas.Identity.Data
+
+@inject SignInManager<WaveformUser> SignInManager
+@inject UserManager<WaveformUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Waveform</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+</head>
+<body>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow">
+                <div class="container">
+                    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                        <img src="~/lib//images/logo.png"/>
+                        Waveform
+                    </a>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                        <partial name="_LoginPartial.cshtml" />
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div>
+            <div class="container mt-3">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container text-center waveform">
+                <div id="waveformCtrl" style="display: none;">
+                </div>
+                <div id="waveformWave"></div>
+                <div id="waveformInfo"></div>
+            </div>
+        </footer>
+    } else {
+        <div style="height: 100vh; width: 100vw; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+            @RenderBody()
+        </div>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

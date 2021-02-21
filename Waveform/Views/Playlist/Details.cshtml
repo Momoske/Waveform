@@ -1,0 +1,100 @@
+﻿@model PlaylistViewModel
+@{
+    ViewData["Title"] = Model.Playlist.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    string image = String.Format("data:image/*;base64,{0}", Convert.ToBase64String(Model.Playlist.Image));
+}
+
+<div class="index__header">
+    <h1>Playlist</h1>
+    <a asp-action="Index">
+        <span class="material-icons">library_music</span>
+        &nbsp;&nbsp;My playlists
+    </a>
+</div>
+
+<div class="playlist mt-3">
+    <img id="playlist__image" src="@image" alt="artwork" />
+    <div class="playlist__info">
+        <h6>Created on: @Model.Playlist.DateCreated.Replace("/", ".").Replace(" ", " - ").Remove(Model.Playlist.DateCreated.Length - 1)</h6>
+        <h1>@Model.Playlist.Title</h1>
+        <div class="playlist__info__edit">
+            <span class="material-icons">edit</span>
+            <a asp-action="Edit" asp-route-id="@Model.Playlist.Id">Edit playlist</a>
+        </div>
+    </div>
+</div>
+
+
+<div id="playlist" class="songs mt-4">
+    <div class="songs__header">
+        <span>#</span>
+        <span>Title</span>
+        <span>Date added</span>
+    </div>
+    <hr />
+
+   @if (Model.Songs != null)
+    {
+        int i = 1;
+        foreach (var song in Model.Songs)
+        {
+            if (song.Audio != null)
+            {
+                <div class="songs__track" aria-label="@song.Id" ondblclick="loadPlay(@i)">
+                    <span class="songs__track__count">
+                        <span>@i</span>
+                        <span class="songs__track__play material-icons-round" onclick="loadPlay(@i)" style="display: none; margin: -1px 0 -3px -8px;">
+                            play_arrow
+                        </span>
+                    </span>
+                    <span class="songs__track__title">
+                        <span>
+                            <span>@song.Name</span>
+                        </span>
+                    </span>
+                    <span class="songs__track__added">
+                        <span>@song.DateAdded.Replace("/", ".").Replace(" ", " - ").Remove(song.DateAdded.Length - 1)</span>
+                    </span>
+                </div>
+                i++;
+            }
+        }
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/waveform.js"></script>
+    <script>
+        var wavesurfer = null;
+
+        function loadSongs(songs, position, baseUrl) {
+            if (wavesurfer !== null) {
+                wavesurfer.destroy();
+                wavesurfer = null;
+            }
+
+            if (wavesurfer == null) {
+                wavesurfer = createWave(songs, position, baseUrl);
+            }
+        }
+
+        function loadPlay(position) {
+            var playlist = $(`#playlist > div.songs__track`);
+            loadSongs(playlist, position - 1, '@Url.Action("GetSong", "Playlist")?id=');
+        }
+
+        $('.songs__track').mouseenter(function () {
+            $(this).find('.songs__track__count > span:not(.songs__track__play)').css('display', 'none');
+            $(this).find('.songs__track__count > span.songs__track__play').css('display', 'block');
+
+            $(this).mouseleave(function () {
+                $(this).find('.songs__track__count > span:not(.songs__track__play)').css('display', 'block');
+                $(this).find('.songs__track__count > span.songs__track__play').css('display', 'none');
+            });
+        });
+    </script>
+}
