@@ -45,66 +45,79 @@
     </div>
 </div>
 
-<div id="playlist" class="songs mt-4">
-    <div class="songs__header">
-        <span>#</span>
-        <span>Title</span>
-        <span>Date added</span>
-    </div>
-    <hr />
-   @{int i = 1;}
-   @foreach (var song in Model.PlaylistSongs)
-    {
-        string audio = String.Format("data:audio/*;base64,{0}", Convert.ToBase64String(song.Audio));
-        <div class="songs__track">
-            <span class="songs__track__count">@i</span>
-            <span class="songs__track__title">
-                <span>
-                    <span>@song.Name</span>
-                </span>
-            </span>
-            <span class="songs__track__added">
-                <span class="material-icons-round remove" style="font-size: 16px;" onclick="removeSong(@i)">
-                    remove_circle_outline
-                </span>
-                <span>@song.DateAdded.Replace("/", ".").Replace(" ", " - ").Remove(song.DateAdded.Length - 1)</span>
-            </span>
+@if (Model.PlaylistSongs != null && Model.PlaylistSongs.Any())
+{
+    <div id="playlist" class="songs mt-4">
+        <div class="songs__header">
+            <span>#</span>
+            <span>Title</span>
+            <span>Date added</span>
         </div>
-        i++;
-    }
-</div>
+        <hr />
+       @{int i = 1;}
+       @foreach (var song in Model.PlaylistSongs)
+       {
+           string audio = String.Format("data:audio/*;base64,{0}", Convert.ToBase64String(song.Audio));
+            <div class="songs__track">
+                <span class="songs__track__count">@i</span>
+                <span class="songs__track__title">
+                    <span>
+                        <span>@song.Name</span>
+                    </span>
+                </span>
+                <span class="songs__track__added">
+                    <span class="material-icons-round remove" style="font-size: 16px;" onclick="removeSong(@i)">
+                        remove_circle_outline
+                    </span>
+                    <span>@song.DateAdded.Replace("/", ".").Replace(" ", " - ").Remove(song.DateAdded.Length - 1)</span>
+                </span>
+            </div>
+           i++;
+       }
+    </div>
+}
 
-<div class="songs mt-4">
-    <h3 class="mb-4">Your library</h3>
-    <div class="songs__header">
-        <span>#</span>
-        <span>Title</span>
-        <span>Date added</span>
-    </div>
-    <hr />
-   @foreach (var song in Model.AllSongs)
-    {
-        string audio = String.Format("data:audio/*;base64,{0}", Convert.ToBase64String(song.Audio));
-        <div class="songs__track">
-            <span class="songs__track__count">@song.Id</span>
-            <span class="songs__track__title">
-                <span>
-                    <span>@song.Name</span>
-                </span>
-            </span>
-            <span class="songs__track__added">
-                <span class="material-icons-round" style="font-size: 16px;" onclick="addSong(@song.Id, '@song.Name', '@song.DateAdded')">
-                    add_circle_outline
-                </span>
-                <span>@song.DateAdded.Replace("/", ".").Replace(" ", " - ").Remove(song.DateAdded.Length - 1)</span>
-            </span>
+@if (Model.AllSongs != null && Model.AllSongs.Any())
+{
+    <div class="songs mt-4">
+        <h3 class="mb-4">Your library</h3>
+        <div class="songs__header">
+            <span>#</span>
+            <span>Title</span>
+            <span>Date added</span>
         </div>
-    }
-</div>
+        <hr />
+       @foreach (var song in Model.AllSongs)
+        {
+            string audio = String.Format("data:audio/*;base64,{0}", Convert.ToBase64String(song.Audio));
+            <div class="songs__track">
+                <span class="songs__track__count">@song.Id</span>
+                <span class="songs__track__title">
+                    <span>
+                        <span>@song.Name</span>
+                    </span>
+                </span>
+                <span class="songs__track__added">
+                    <span class="material-icons-round" style="font-size: 16px;" onclick="addSong(@song.Id, '@song.Name', '@song.DateAdded')">
+                        add_circle_outline
+                    </span>
+                    <span>@song.DateAdded.Replace("/", ".").Replace(" ", " - ").Remove(song.DateAdded.Length - 1)</span>
+                </span>
+            </div>
+        }
+    </div>
+} else
+{
+    <br />
+    <div class="addSongs" style="flex-direction: column; align-items: center;">
+        <h1>Your Waveform library is empty.</h1><br />
+        <h2>To start, <a asp-action="Add" asp-controller="Home">add some songs</a>.</h2>
+    </div>
+}
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-<script>
+    <script>
         let ok = 0;
         let formats = ['.png', '.jpg', '.jpeg'];
         const image = $('#playlist__image').attr('src');
@@ -168,5 +181,5 @@
             $('#songs').val(songs.join(','));
             $(`#playlist > div.songs__track:eq(${position - 1})`).remove();
         }
-</script>
+    </script>
 }
