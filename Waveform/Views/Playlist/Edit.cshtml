@@ -118,7 +118,7 @@
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
     <script>
-        let ok = 0;
+        let ok = 3;
         let formats = ['.png', '.jpg', '.jpeg'];
         const image = $('#playlist__image').attr('src');
 
@@ -139,7 +139,10 @@
             );
         });
 
-        $('form').submit(function (e) { ok !== 2 && e.preventDefault(); });
+        $('form').submit(function (e) {
+            console.log(ok);
+            ok < 2 && e.preventDefault();
+        });
 
         function addSong(id, name, date) {
             $('#songs').val(function () { return this.value !== '' ? this.value + ',' + id : id });
