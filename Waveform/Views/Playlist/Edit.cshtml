@@ -124,6 +124,7 @@
 
         $('#image').change(function (e) {
             ok = 0;
+
             formats.some(format => {
                 if ($('#image').val() !== '') {
                     if ($('#image').val().substring($('#image').val().lastIndexOf('.')) === format)
