@@ -121,7 +121,7 @@
         });
 
         $('form').submit(function (e) {
-            ok < 2 ? $('#userId').val('@UserManager.GetUserId(User)') : e.preventDefault();
+            ok < 2 ? e.preventDefault()$ : ('#userId').val('@UserManager.GetUserId(User)');
         });
 
         function addSong(id, name, date) {
